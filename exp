@@ -1,1 +1,62 @@
+<body>
 
+<div class="container">
+
+    <h2>🎓 Entrance Exam Papers</h2>
+
+    <input type="text" id="entranceSearch"
+    placeholder="SEARCH ENTRANCE PAPERS"
+    onkeyup="searchEntrancePapers()">
+
+    <div id="entranceResults"></div>
+
+</div>
+
+<script>
+
+let entrancePapers = [];
+
+fetch("papers/entrance.json")
+.then(res => res.json())
+.then(data => {
+    entrancePapers = data;
+
+    // Show first 5 papers initially
+    displayEntrancePapers(data.slice(0,5));
+});
+
+function displayEntrancePapers(files){
+
+    const results = document.getElementById("entranceResults");
+    results.innerHTML = "";
+
+    if(files.length === 0){
+        results.innerHTML = "<p>No papers found</p>";
+        return;
+    }
+
+    files.forEach(file=>{
+        let link = document.createElement("a");
+        link.href = "papers/" + file.file;
+        link.target = "_blank";
+        link.className = "paper-link";
+        link.textContent = "📄 " + file.name;
+        results.appendChild(link);
+    });
+}
+
+function searchEntrancePapers(){
+
+    const keyword = document.getElementById("entranceSearch")
+    .value.toLowerCase();
+
+    const filtered = entrancePapers.filter(item =>
+        item.name.toLowerCase().includes(keyword)
+    );
+
+    displayEntrancePapers(filtered);
+}
+
+</script>
+
+</body>
