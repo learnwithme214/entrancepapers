@@ -3,74 +3,81 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Entrance Portal</title>
+<title>Entrance Papers</title>
 
 <style>
-html, body {
-    height: 100%;
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
     margin: 0;
-    padding: 0;
+    padding: 20px;
 }
 
-/* Background image */
-body {
-    background-image: url("gu.jpg"); /* change this */
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+.container {
+    max-width: 500px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+}
 
+h2 {
+    text-align: center;
+}
+
+.file {
+    padding: 12px;
+    margin: 10px 0;
+    background: #e8f3ff;
+    border-radius: 8px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
 }
 
-/* Dark overlay */
-body::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: 0;
-}
-
-/* Center box */
-.container {
-    position: relative;
-    z-index: 1;
-    text-align: center;
-    color: white;
-}
-
-/* Button */
-.btn {
-    padding: 15px 30px;
-    font-size: 18px;
-    border: none;
-    border-radius: 30px;
-    background: #00c6ff;
-    color: white;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.btn:hover {
-    background: #0072ff;
-    transform: scale(1.05);
+a {
+    text-decoration: none;
+    color: blue;
+    font-weight: bold;
 }
 </style>
-
 </head>
 
 <body>
 
 <div class="container">
-    <h1>Welcome</h1>
-    <p>Enter to continue</p>
-    <button class="btn" onclick="location.href='exp.html'">Enter</button>
+    <h2 id="title"></h2>
+    <div id="list"></div>
 </div>
+
+<script>
+fetch("data.json")
+.then(res => res.json())
+.then(data => {
+
+    const block = data.entrance_papers;
+
+    document.getElementById("title").innerText = block.title;
+
+    const list = document.getElementById("list");
+
+    block.files.forEach(file => {
+
+        const fullPath = "papers/" + file;   // 🔥 IMPORTANT FIX
+
+        const div = document.createElement("div");
+        div.className = "file";
+
+        div.innerHTML = `
+            <span>${file}</span>
+            <a href="${fullPath}" target="_blank">Open</a>
+        `;
+
+        list.appendChild(div);
+    });
+
+});
+</script>
 
 </body>
 </html>
