@@ -3,26 +3,73 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Entrance Papers</title>
+<title>Entrance Portal</title>
 
 <style>
-body {
-    font-family: Arial, sans-serif;
-    background: #f4f4f4;
+html, body {
+    height: 100%;
     margin: 0;
-    padding: 20px;
+    font-family: Arial, sans-serif;
 }
 
+/* Background */
+body {
+    background: url("bg.jpg") no-repeat center center/cover;
+    overflow: hidden;
+}
+
+/* Dark overlay */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 0;
+}
+
+/* Center screens */
+.screen {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: white;
+    text-align: center;
+}
+
+/* Button */
+.btn {
+    margin-top: 20px;
+    padding: 15px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 30px;
+    background: #00c6ff;
+    color: white;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #0072ff;
+}
+
+/* Papers UI */
 .container {
+    display: none;
+    position: relative;
+    z-index: 1;
     max-width: 500px;
     margin: auto;
-    background: white;
+    background: rgba(255,255,255,0.95);
+    color: black;
     padding: 20px;
     border-radius: 10px;
-}
-
-h2 {
-    text-align: center;
 }
 
 .file {
@@ -32,7 +79,6 @@ h2 {
     border-radius: 8px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
 }
 
 a {
@@ -45,12 +91,26 @@ a {
 
 <body>
 
-<div class="container">
+<!-- 🔥 WELCOME SCREEN -->
+<div class="screen" id="welcome">
+    <h1>Welcome</h1>
+    <p>Enter to continue</p>
+    <button class="btn" onclick="enterSite()">Enter</button>
+</div>
+
+<!-- 📂 PAPERS SCREEN -->
+<div class="container" id="papers">
     <h2 id="title"></h2>
     <div id="list"></div>
 </div>
 
 <script>
+function enterSite() {
+    document.getElementById("welcome").style.display = "none";
+    document.getElementById("papers").style.display = "block";
+}
+
+/* JSON LOADER */
 fetch("data.json")
 .then(res => res.json())
 .then(data => {
