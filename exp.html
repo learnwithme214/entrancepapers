@@ -1,127 +1,78 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Entrance Papers</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entrance Portal</title>
 
 <style>
-body{
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     font-family: Arial, sans-serif;
-    margin:0;
-    padding:20px;
 }
 
-#papersPage{
-    display:none;
+body, html {
+    height: 100%;
 }
 
-button{
-    padding:12px 25px;
-    font-size:18px;
-    cursor:pointer;
+/* Background image */
+body {
+    background: url('your-image.jpg') no-repeat center center/cover;
 }
 
-input{
-    width:100%;
-    padding:10px;
-    font-size:16px;
-    margin:15px 0;
+/* Dark overlay */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
 }
 
-.paper{
-    border:1px solid #ccc;
-    padding:12px;
-    margin:10px 0;
-    border-radius:8px;
+/* Center container */
+.container {
+    position: relative;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: white;
+    text-align: center;
+}
+
+/* Button styling */
+.btn {
+    padding: 15px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 30px;
+    background: #00c6ff;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background: #0072ff;
+    transform: scale(1.05);
 }
 </style>
+
 </head>
+
 <body>
 
-<!-- Home Page -->
-<div id="homePage">
-    <h1>Previous Year Papers</h1>
-    <button onclick="openEntrancePage()">
-        Entrance Papers
-    </button>
+<div class="overlay"></div>
+
+<div class="container">
+    <h1>Welcome</h1>
+    <p>Enter to continue</p>
+    <button class="btn" onclick="location.href='home.html'">Enter</button>
 </div>
-
-<!-- Entrance Papers Page -->
-<div id="papersPage">
-    <h2>Entrance Papers</h2>
-
-    <input type="text"
-           id="search"
-           placeholder="Search papers..."
-           onkeyup="searchPapers()">
-
-    <div id="paperList"></div>
-</div>
-
-<script>
-
-const papers = [
-{
-    name:"COTTON UNIVERSITY 2022",
-    file:"papers/COTTON UNIVERSITY 2022 A-2.pdf"
-},
-{
-    name:"CPGEE 2021 Geography",
-    file:"papers/CPGEE-2021-Geography.pdf"
-},
-{
-    name:"CU 2023 ENTRANCE",
-    file:"papers/CU 2023 ENTRANCE.pdf"
-},
-{
-    name:"Cotton Entrance 2024",
-    file:"papers/cotton entrance 2024-2-12.pdf"
-}
-];
-
-function openEntrancePage(){
-    document.getElementById("homePage").style.display="none";
-    document.getElementById("papersPage").style.display="block";
-    displayPapers(papers);
-}
-
-function displayPapers(list){
-
-    let html="";
-
-    list.forEach(paper=>{
-        html += `
-        <div class="paper">
-            <a href="${paper.file}" target="_blank">
-                ${paper.name}
-            </a>
-        </div>
-        `;
-    });
-
-    document.getElementById("paperList").innerHTML=html;
-}
-
-function searchPapers(){
-
-    const keyword =
-    document.getElementById("search")
-    .value
-    .toLowerCase();
-
-    if(keyword===""){
-        displayPapers(papers);
-        return;
-    }
-
-    const filtered = papers.filter(p =>
-        p.name.toLowerCase().includes(keyword)
-    );
-
-    displayPapers(filtered);
-}
-
-</script>
 
 </body>
 </html>
