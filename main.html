@@ -1,253 +1,203 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Previous Year Papers</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-   <style>
-    body {
-        font-family: Arial;
-        text-align: center;
-        background: url("https://images.unsplash.com/photo-1524995997946-a1c2e315a42f") no-repeat center center/cover;
-        min-height: 100vh;
-    }
+<title>Previous Year Papers</title>
 
-    body::before {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.35);
-        z-index: -1;
-    }
+<style>
 
-    .container {
-        width: 95%;
-        max-width: 650px;
-        min-height: 250px;
-        margin: auto;
-        margin-top: 120px;
-        background: white;
-        padding: 35px;
-        border-radius: 12px;
-        box-shadow: 0 0 20px rgba(0,0,0,0.2);
-    }
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    text-align:center;
+    background:url("gu.jpg");
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+}
 
-    select, button, input {
-        width: 100%;
-        padding: 14px;
-        font-size: 17px;
-        border-radius: 8px;
-        margin-bottom: 18px;
-    }
+.overlay{
+    min-height:100vh;
+    background:rgba(0,0,0,0.5);
+    padding:20px;
+}
 
-    button {
-        background: green;
-        color: white;
-        border: none;
-        cursor: pointer;
-        margin-top: 10px;
-    }
+/* Sliding Description */
 
-    .papers a, .paper-link {
-        display: block;
-        margin-top: 10px;
-        padding: 10px;
-        background: #eee;
-        text-decoration: none;
-        color: black;
-        border-radius: 5px;
-    }
+.marquee{
+    width:100%;
+    overflow:hidden;
+    white-space:nowrap;
+    color:white;
+    font-size:20px;
+    font-weight:bold;
+    padding:15px 0;
+    background:rgba(255,255,255,0.15);
+    border-radius:10px;
+}
 
-    .download {
-        font-size: 12px;
-        color: blue;
-    }
+.marquee span{
+    display:inline-block;
+    padding-left:100%;
+    animation:slide 27s linear infinite;
+}
 
-    .entrance-btn{
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        background: #007bff;
-        color: white;
-        padding: 12px 18px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: bold;
+@keyframes slide{
+    from{
+        transform:translateX(0);
     }
+    to{
+        transform:translateX(-100%);
+    }
+}
 
-    #entrancePage{
-        display:none;
-    }
+button{
+    padding:12px 25px;
+    font-size:18px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    margin:10px;
+}
+
+#entranceBtn{
+    margin-top:120px;
+}
+
+#searchSection{
+    display:none;
+}
+
+#searchInput{
+    width:80%;
+    max-width:500px;
+    padding:12px;
+    font-size:16px;
+    border:none;
+    border-radius:8px;
+}
+
+.paper{
+    width:80%;
+    max-width:700px;
+    margin:10px auto;
+    padding:12px;
+    background:white;
+    border-radius:10px;
+}
+
+.paper a{
+    text-decoration:none;
+    color:#0077ff;
+    font-weight:bold;
+}
+
 </style>
 </head>
 
 <body>
 
-<a href="#"
-   id="entranceBtn"
-   class="entrance-btn"
-   onclick="showEntrancePage()">
-   🎓 Entrance Exam Papers
-</a>
+<div class="overlay">
 
-<div class="container" id="entrancePage">
+<div class="marquee">
+<span>
+Welcome to the Entrance Papers Portal • Search Previous Year Entrance Papers Easily • New Papers Are Added Regularly • Use Keywords To Find Papers Quickly •
+</span>
+</div>
 
-    <h2>🎓 Entrance Exam Papers</h2>
+<button id="entranceBtn" onclick="openEntrance()">
+Entrance Papers
+</button>
 
-    <input type="text" id="entranceSearch"
-    placeholder="SEARCH ENTRANCE PAPERS"
-    onkeyup="searchEntrancePapers()">
+<div id="searchSection">
 
-    <div id="entranceResults"></div>
+<button onclick="goBack()">⬅ Back</button>
 
-    <button onclick="hideEntrancePage()">⬅ Back</button>
+<br><br>
+
+<input
+type="text"
+id="searchInput"
+placeholder="Search Entrance Papers..."
+onkeyup="searchFiles()">
+
+<div id="fileList"></div>
+
+</div>
 
 </div>
 
 <script>
 
-function handleDept() {
-    const dept = document.getElementById("department").value;
-    const sem = document.getElementById("semester");
+let allFiles=[];
 
-    if (dept === "btech") {
-        sem.style.display = "block";
-    } else {
-        sem.style.display = "none";
-        sem.value = "";
-    }
+function openEntrance(){
+    document.getElementById("entranceBtn").style.display="none";
+    document.getElementById("searchSection").style.display="block";
+    loadFiles();
 }
 
-function searchPapers() {
-
-    const dept = document.getElementById("department").value;
-    const sem = document.getElementById("semester").value;
-    const year = document.getElementById("year").value;
-    const results = document.getElementById("results");
-
-    results.innerHTML = "";
-
-    if (!dept || !year) {
-        results.innerHTML = "<p>Select department and year</p>";
-        return;
-    }
-
-    if (dept === "btech" && !sem) {
-        results.innerHTML = "<p>Select semester</p>";
-        return;
-    }
-
-    fetch("papers/index.json")
-        .then(res => res.json())
-        .then(data => {
-
-            let filtered = data.filter(item => {
-
-                if (dept === "btech") {
-                    return item.dept.toLowerCase() === dept &&
-                           item.sem.toLowerCase() === sem &&
-                           item.year === year;
-                } else {
-                    return item.dept.toLowerCase() === dept &&
-                           item.year === year;
-                }
-            });
-
-            if (filtered.length === 0) {
-                results.innerHTML = "<p style='color:red;'>No files found</p>";
-                return;
-            }
-
-            filtered.forEach(file => {
-
-                let link = document.createElement("a");
-                link.href = "papers/" + file.file;
-                link.target = "_blank";
-                link.textContent = "📄 " + file.file;
-
-                let download = document.createElement("a");
-                download.href = "papers/" + file.file;
-                download.download = file.file;
-                download.textContent = "⬇ Download";
-                download.className = "download";
-
-                results.appendChild(link);
-                results.appendChild(download);
-            });
-
-        })
-        .catch(err => {
-            results.innerHTML = "<p style='color:red;'>Error loading index.json</p>";
-        });
+function goBack(){
+    document.getElementById("searchSection").style.display="none";
+    document.getElementById("entranceBtn").style.display="inline-block";
+    document.getElementById("searchInput").value="";
 }
 
-let entrancePapers = [];
+function loadFiles(){
 
-function showEntrancePage(){
+fetch("entrance.json")
+.then(response=>response.json())
+.then(data=>{
 
-    document.getElementById("mainPage").style.display = "none";
-    document.getElementById("entrancePage").style.display = "block";
+allFiles=data.entrance_papers.files;
 
-    // Hide button
-    document.getElementById("entranceBtn").style.display = "none";
+showFiles(allFiles.slice(0, 5));
 
-    if(entrancePapers.length === 0){
+});
 
-        fetch("papers/entrance.json")
-        .then(res => res.json())
-        .then(data => {
-
-            entrancePapers = data;
-
-            // Show first 5 papers
-            displayEntrancePapers(data.slice(0,5));
-
-        });
-
-    }
 }
 
-function hideEntrancePage(){
+function showFiles(files){
 
-    document.getElementById("entrancePage").style.display = "none";
-    document.getElementById("mainPage").style.display = "block";
+let html="";
 
-    // Show button again
-    document.getElementById("entranceBtn").style.display = "block";
-}
-    
-function displayEntrancePapers(files){
+files.forEach(file=>{
 
-    const results = document.getElementById("entranceResults");
-    results.innerHTML = "";
+html+=`
+<div class="paper">
+<a href="papers/${file}" target="_blank">${file}</a>
+</div>
+`;
 
-    if(files.length === 0){
-        results.innerHTML = "<p>No papers found</p>";
-        return;
-    }
+});
 
-    files.forEach(file=>{
-        let link = document.createElement("a");
-        link.href = "papers/" + file.file;
-        link.target = "_blank";
-        link.className = "paper-link";
-        link.textContent = "📄 " + file.name;
-        results.appendChild(link);
-    });
+document.getElementById("fileList").innerHTML=html;
+
 }
 
-function searchEntrancePapers(){
+function normalize(text){
 
-    const keyword = document.getElementById("entranceSearch")
-    .value.toLowerCase();
+    return text
+        .toLowerCase()
+        .replace(/\./g,"")
+        .replace(/\s+/g,"");
 
-    const filtered = entrancePapers.filter(item =>
-        item.name.toLowerCase().includes(keyword)
+}
+
+function searchFiles(){
+
+    let keyword = normalize(
+        document.getElementById("searchInput").value
     );
 
-    displayEntrancePapers(filtered);
+    let filtered = allFiles.filter(file =>
+        normalize(file).includes(keyword)
+    );
+
+    showFiles(filtered);
+
 }
 
 </script>
