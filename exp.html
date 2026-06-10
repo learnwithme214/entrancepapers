@@ -1,172 +1,165 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Entrance Papers</title>
 
 <style>
-html, body {
-    height: 100%;
-    margin: 0;
-    font-family: Arial;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
 }
 
-/* BACKGROUND */
-body {
-    background: url("gu.jpg") no-repeat center center/cover;
+body{
+    min-height:100vh;
+    background:url("bg.jpg") center/cover no-repeat;
 }
 
-/* BLUR LAYER (welcome only) */
-.blur {
-    position: fixed;
-    inset: 0;
-    backdrop-filter: blur(6px);
-    background: rgba(0,0,0,0.3);
-    z-index: 1;
+/* Welcome Screen */
+#welcome{
+    position:fixed;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    backdrop-filter:blur(6px);
+    background:rgba(0,0,0,.35);
 }
 
-/* CENTER BOX */
-.center {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2;
-    flex-direction: column;
+#welcome h1{
+    color:white;
+    margin-bottom:20px;
 }
 
-/* BUTTON */
-.btn {
-    padding: 14px 28px;
-    border: none;
-    border-radius: 25px;
-    background: #00c6ff;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
+button{
+    padding:12px 25px;
+    border:none;
+    border-radius:25px;
+    cursor:pointer;
+    font-size:16px;
 }
 
-/* MENU BOX */
-.box {
-    display: none;
-    background: rgba(255,255,255,0.95);
-    padding: 25px;
-    border-radius: 12px;
-    text-align: center;
+/* Menu */
+#menu{
+    display:none;
+    position:fixed;
+    inset:0;
+    justify-content:center;
+    align-items:center;
 }
 
-/* PAPERS PAGE */
-#papers {
-    display: none;
-    max-width: 600px;
-    margin: 40px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
+.box{
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    text-align:center;
+    width:300px;
 }
 
-.file {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    margin: 8px 0;
-    background: #e8f3ff;
-    border-radius: 8px;
+/* Papers Page */
+#papersPage{
+    display:none;
+    min-height:100vh;
+    background:rgba(255,255,255,.95);
+    padding:20px;
 }
 
-/* SEARCH */
-input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
+#search{
+    width:100%;
+    max-width:600px;
+    padding:12px;
+    margin:15px auto;
+    display:block;
+}
+
+.paper{
+    max-width:600px;
+    margin:10px auto;
+    padding:12px;
+    background:#f2f2f2;
+    border-radius:10px;
+}
+
+.paper a{
+    text-decoration:none;
 }
 </style>
 </head>
 
 <body>
 
-<!-- 🔥 WELCOME SCREEN -->
 <div id="welcome">
-    <div class="blur"></div>
-    <div class="center">
-        <h1 style="color:white; z-index:2;">Welcome</h1>
-        <button class="btn" onclick="goMenu()">Enter</button>
-    </div>
+    <h1>Welcome</h1>
+    <button onclick="showMenu()">Enter</button>
 </div>
 
-<!-- 🔥 MENU BOX -->
-<div id="menu" class="center" style="display:none;">
+<div id="menu">
     <div class="box">
         <h2>Menu</h2>
-        <button class="btn" onclick="openPapers()">Entrance Papers</button>
+        <br>
+        <button onclick="showPapers()">Entrance Papers</button>
     </div>
 </div>
 
-<!-- 🔥 PAPERS PAGE -->
-<div id="papers">
+<div id="papersPage">
     <h2>Entrance Papers</h2>
-    <input type="text" id="search" placeholder="Search papers...">
-    <div id="list">Loading...</div>
+
+    <input
+        type="text"
+        id="search"
+        placeholder="Search papers..."
+    >
+
+    <div id="papers"></div>
 </div>
 
 <script>
+let allFiles = [];
 
-let files = [];
-
-function goMenu() {
-    document.getElementById("welcome").style.display = "none";
-    document.getElementById("menu").style.display = "flex";
+function showMenu(){
+    document.getElementById("welcome").style.display="none";
+    document.getElementById("menu").style.display="flex";
 }
 
-function openPapers() {
-    document.getElementById("menu").style.display = "none";
-    document.getElementById("papers").style.display = "block";
+function showPapers(){
+    document.getElementById("menu").style.display="none";
+    document.getElementById("papersPage").style.display="block";
 }
 
-/* LOAD JSON */
 fetch("entrance.json")
-.then(res => res.json())
+.then(r => r.json())
 .then(data => {
-
-    files = data.entrance_papers.files.slice(0, 5); // first 5 only
-
-    render(files);
-
+    allFiles = data.files;
+    render(allFiles.slice(0,5)); // first 5 PDFs
 });
 
-/* RENDER FILES */
-function render(list) {
-    const box = document.getElementById("list");
-    box.innerHTML = "";
+function render(files){
+    const container = document.getElementById("papers");
+    container.innerHTML="";
 
-    list.forEach(file => {
-        const div = document.createElement("div");
-        div.className = "file";
-
-        div.innerHTML = `
-            <span>${file}</span>
-            <a href="papers/${file}" target="_blank">Open</a>
+    files.forEach(file=>{
+        container.innerHTML += `
+            <div class="paper">
+                <a href="papers/${file}" target="_blank">${file}</a>
+            </div>
         `;
-
-        box.appendChild(div);
     });
 }
 
-/* SEARCH */
-document.getElementById("search").addEventListener("input", function() {
-    const val = this.value.toLowerCase();
+document.getElementById("search").addEventListener("input", e=>{
+    const q = e.target.value.toLowerCase();
 
-    const filtered = files.filter(f => 
-        f.toLowerCase().includes(val)
+    const filtered = allFiles.filter(file =>
+        file.toLowerCase().includes(q)
     );
 
     render(filtered);
 });
-
 </script>
 
 </body>
