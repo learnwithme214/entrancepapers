@@ -2,167 +2,173 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Entrance Papers</title>
+<title>Previous Year Papers</title>
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial,sans-serif;
-}
 
 body{
-    min-height:100vh;
-    background-image:url("gu.jpg");
+    margin:0;
+    font-family:Arial,sans-serif;
+    text-align:center;
+
+    background:url("gu.jpg");
     background-size:cover;
     background-position:center;
-    background-repeat:no-repeat;
+    background-attachment:fixed;
 }
 
-/* Welcome Screen */
-#welcome{
-    position:fixed;
-    inset:0;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
-    backdrop-filter:blur(6px);
-    background:rgba(0,0,0,.35);
+.overlay{
+    min-height:100vh;
+    background:rgba(0,0,0,0.5);
+    padding:20px;
 }
 
-#welcome h1{
+h1{
     color:white;
-    margin-bottom:20px;
 }
 
 button{
     padding:12px 25px;
+    font-size:18px;
     border:none;
-    border-radius:25px;
+    border-radius:10px;
     cursor:pointer;
-    font-size:16px;
+    margin:10px;
 }
 
-/* Menu */
-#menu{
+#entranceBtn{
+    margin-top:100px;
+}
+
+#searchSection{
     display:none;
-    position:fixed;
-    inset:0;
-    justify-content:center;
-    align-items:center;
 }
 
-.box{
-    background:white;
-    padding:30px;
-    border-radius:15px;
-    text-align:center;
-    width:300px;
-}
-
-/* Papers Page */
-#papersPage{
-    display:none;
-    min-height:100vh;
-    background:rgba(255,255,255,.95);
-    padding:20px;
-}
-
-#search{
-    width:100%;
-    max-width:600px;
+#searchInput{
+    width:80%;
+    max-width:500px;
     padding:12px;
-    margin:15px auto;
-    display:block;
+    font-size:16px;
+    border-radius:8px;
+    border:none;
 }
 
 .paper{
-    max-width:600px;
+    background:white;
     margin:10px auto;
     padding:12px;
-    background:#f2f2f2;
+    width:80%;
+    max-width:700px;
     border-radius:10px;
 }
 
 .paper a{
     text-decoration:none;
+    color:#0077ff;
+    font-weight:bold;
 }
+
 </style>
 </head>
 
 <body>
 
-<div id="welcome">
-    <h1>Welcome</h1>
-    <button onclick="showMenu()">Enter</button>
-</div>
+<div class="overlay">
 
-<div id="menu">
-    <div class="box">
-        <h2>Menu</h2>
-        <br>
-        <button onclick="showPapers()">Entrance Papers</button>
-    </div>
-</div>
+<h1>Previous Year Papers</h1>
 
-<div id="papersPage">
-    <h2>Entrance Papers</h2>
+<button id="entranceBtn" onclick="openEntrance()">
+    Entrance Papers
+</button>
+
+<div id="searchSection">
+
+    <button onclick="goBack()">⬅ Back</button>
+
+    <br><br>
 
     <input
         type="text"
-        id="search"
-        placeholder="Search papers..."
+        id="searchInput"
+        placeholder="Search Entrance Papers..."
+        onkeyup="searchFiles()"
     >
 
-    <div id="papers"></div>
+    <div id="fileList"></div>
+
+</div>
+
 </div>
 
 <script>
-let allFiles = [];
 
-function showMenu(){
-    document.getElementById("welcome").style.display="none";
-    document.getElementById("menu").style.display="flex";
+let allFiles=[];
+
+function openEntrance(){
+
+    document.getElementById("entranceBtn").style.display="none";
+
+    document.getElementById("searchSection").style.display="block";
+
+    loadFiles();
 }
 
-function showPapers(){
-    document.getElementById("menu").style.display="none";
-    document.getElementById("papersPage").style.display="block";
+function goBack(){
+
+    document.getElementById("searchSection").style.display="none";
+
+    document.getElementById("entranceBtn").style.display="inline-block";
+
+    document.getElementById("searchInput").value="";
 }
 
-fetch("entrance.json")
-.then(r => r.json())
-.then(data => {
-    allFiles = data.files;
-    render(allFiles.slice(0,5)); // first 5 PDFs
-});
+function loadFiles(){
 
-function render(files){
-    const container = document.getElementById("papers");
-    container.innerHTML="";
+    fetch("entrance.json")
+    .then(res=>res.json())
+    .then(data=>{
 
-    files.forEach(file=>{
-        container.innerHTML += `
-            <div class="paper">
-                <a href="papers/${file}" target="_blank">${file}</a>
-            </div>
-        `;
+        allFiles=data.entrance_papers.files;
+
+        showFiles(allFiles);
+
     });
 }
 
-document.getElementById("search").addEventListener("input", e=>{
-    const q = e.target.value.toLowerCase();
+function showFiles(files){
 
-    const filtered = allFiles.filter(file =>
-        file.toLowerCase().includes(q)
+    let html="";
+
+    files.forEach(file=>{
+
+        html+=`
+        <div class="paper">
+            <a href="papers/${file}" target="_blank">
+                ${file}
+            </a>
+        </div>
+        `;
+    });
+
+    document.getElementById("fileList").innerHTML=html;
+}
+
+function searchFiles(){
+
+    let keyword=document
+    .getElementById("searchInput")
+    .value
+    .toLowerCase();
+
+    let filtered=allFiles.filter(file=>
+        file.toLowerCase().includes(keyword)
     );
 
-    render(filtered);
-});
+    showFiles(filtered);
+}
+
 </script>
 
 </body>
