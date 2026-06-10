@@ -12,7 +12,6 @@ body{
     margin:0;
     font-family:Arial,sans-serif;
     text-align:center;
-
     background:url("gu.jpg");
     background-size:cover;
     background-position:center;
@@ -25,8 +24,33 @@ body{
     padding:20px;
 }
 
-h1{
+/* Sliding Description */
+
+.marquee{
+    width:100%;
+    overflow:hidden;
+    white-space:nowrap;
     color:white;
+    font-size:20px;
+    font-weight:bold;
+    padding:15px 0;
+    background:rgba(255,255,255,0.15);
+    border-radius:10px;
+}
+
+.marquee span{
+    display:inline-block;
+    padding-left:100%;
+    animation:slide 18s linear infinite;
+}
+
+@keyframes slide{
+    from{
+        transform:translateX(0);
+    }
+    to{
+        transform:translateX(-100%);
+    }
 }
 
 button{
@@ -39,7 +63,7 @@ button{
 }
 
 #entranceBtn{
-    margin-top:100px;
+    margin-top:120px;
 }
 
 #searchSection{
@@ -51,16 +75,16 @@ button{
     max-width:500px;
     padding:12px;
     font-size:16px;
-    border-radius:8px;
     border:none;
+    border-radius:8px;
 }
 
 .paper{
-    background:white;
-    margin:10px auto;
-    padding:12px;
     width:80%;
     max-width:700px;
+    margin:10px auto;
+    padding:12px;
+    background:white;
     border-radius:10px;
 }
 
@@ -77,26 +101,29 @@ button{
 
 <div class="overlay">
 
-<h1>Previous Year Papers</h1>
+<div class="marquee">
+<span>
+Welcome to the Entrance Papers Portal • Search Previous Year Entrance Papers Easily • New Papers Are Added Regularly • Use Keywords To Find Papers Quickly •
+</span>
+</div>
 
 <button id="entranceBtn" onclick="openEntrance()">
-    Entrance Papers
+Entrance Papers
 </button>
 
 <div id="searchSection">
 
-    <button onclick="goBack()">⬅ Back</button>
+<button onclick="goBack()">⬅ Back</button>
 
-    <br><br>
+<br><br>
 
-    <input
-        type="text"
-        id="searchInput"
-        placeholder="Search Entrance Papers..."
-        onkeyup="searchFiles()"
-    >
+<input
+type="text"
+id="searchInput"
+placeholder="Search Entrance Papers..."
+onkeyup="searchFiles()">
 
-    <div id="fileList"></div>
+<div id="fileList"></div>
 
 </div>
 
@@ -107,66 +134,59 @@ button{
 let allFiles=[];
 
 function openEntrance(){
-
     document.getElementById("entranceBtn").style.display="none";
-
     document.getElementById("searchSection").style.display="block";
-
     loadFiles();
 }
 
 function goBack(){
-
     document.getElementById("searchSection").style.display="none";
-
     document.getElementById("entranceBtn").style.display="inline-block";
-
     document.getElementById("searchInput").value="";
 }
 
 function loadFiles(){
 
-    fetch("entrance.json")
-    .then(res=>res.json())
-    .then(data=>{
+fetch("entrance.json")
+.then(response=>response.json())
+.then(data=>{
 
-        allFiles=data.entrance_papers.files;
+allFiles=data.entrance_papers.files;
 
-        showFiles(allFiles);
+showFiles(allFiles);
 
-    });
+});
+
 }
 
 function showFiles(files){
 
-    let html="";
+let html="";
 
-    files.forEach(file=>{
+files.forEach(file=>{
 
-        html+=`
-        <div class="paper">
-            <a href="papers/${file}" target="_blank">
-                ${file}
-            </a>
-        </div>
-        `;
-    });
+html+=`
+<div class="paper">
+<a href="papers/${file}" target="_blank">${file}</a>
+</div>
+`;
 
-    document.getElementById("fileList").innerHTML=html;
+});
+
+document.getElementById("fileList").innerHTML=html;
+
 }
 
 function searchFiles(){
 
-    let keyword=document
-    .getElementById("searchInput")
-    .value
-    .toLowerCase();
+let keyword=document.getElementById("searchInput").value.toLowerCase();
 
-    let filtered=allFiles.filter(file=>
-        file.toLowerCase().includes(keyword)
-    );
+let filtered=allFiles.filter(file=>
+file.toLowerCase().includes(keyword)
+);
 
-    showFiles(filtered);
+showFiles(filtered);
+
 }
 
 </script>
