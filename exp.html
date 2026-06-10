@@ -177,15 +177,26 @@ document.getElementById("fileList").innerHTML=html;
 
 }
 
+function normalize(text){
+
+    return text
+        .toLowerCase()
+        .replace(/\./g,"")
+        .replace(/\s+/g,"");
+
+}
+
 function searchFiles(){
 
-let keyword=document.getElementById("searchInput").value.toLowerCase();
+    let keyword = normalize(
+        document.getElementById("searchInput").value
+    );
 
-let filtered=allFiles.filter(file=>
-file.toLowerCase().includes(keyword)
-);
+    let filtered = allFiles.filter(file =>
+        normalize(file).includes(keyword)
+    );
 
-showFiles(filtered);
+    showFiles(filtered);
 
 }
 
